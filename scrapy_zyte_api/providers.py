@@ -117,14 +117,22 @@ class ZyteApiProvider(PageObjectInputProvider):
             if item_type not in to_provide_stripped and options_name in zyte_api_meta:
                 del zyte_api_meta[options_name]
 
+        print(f"[URL: {request.url}] Original request.meta: {request.meta}")
         api_request = Request(
             url=request.url,
             meta={
                 "zyte_api": zyte_api_meta,
                 "zyte_api_default_params": False,
+                # **request.meta,
+                # "_hsid": request.meta.get("_hsid"),
+                # "_hsparent": request.meta.get("_hsparent"),
+
+                "_hsid": request.meta.get("_hsparent"),
+                # "_hsparent": request.meta.get("_hsid"),
             },
             callback=NO_CALLBACK,
         )
+        print(f"[URL: {api_request.url}] New request.meta: {api_request.meta}")
         api_response: ZyteAPITextResponse = await maybe_deferred_to_future(
             crawler.engine.download(api_request)
         )
